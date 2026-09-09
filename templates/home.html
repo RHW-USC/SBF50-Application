@@ -6,8 +6,12 @@
 {% block body %}
 
 <div class="container">
-    <video id="video" autoplay playsinline></video>
-    <canvas id="canvas"></canvas>
+    <div class="camera-display">
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <button id="toggle-camera">Camera</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>

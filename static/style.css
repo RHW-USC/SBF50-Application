@@ -5,9 +5,12 @@ body{
 .container {
     width: 100%;
     margin-top: 18em;
+}
+
+.camera-display{
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center; 
 }
 
 #canvas {
