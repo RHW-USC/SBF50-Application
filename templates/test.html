@@ -10,18 +10,24 @@
   <div class="app">
     <div class="topbar">
       <a class="icon-btn" href="{{ url_for('choose_test') }}">←</a>
-      <span class="kicker">Test screen</span>
+      <span class="kicker">Test Screen</span>
     </div>
 
     <main class="card">
       <div class="micro" style="text-align:left">30-Second Sit-to-Stand</div>
 
       <div class="score-box">
-        <div class="score-label">Time remaining</div>
-        <div class="score" id="timer">30s</div>
+        <div class="timer-container">
+          <div class="score-label" id="timer-label">Time Remaining</div>
+          <div id="timer">0</div>
+        </div>
+        <div class="score-container">
+          <div class="score-label">Current Score</div>
+          <div id="score">0</div>
+        </div>
       </div>
 
-      <div class="preview">
+      <div class="preview" style="height:220px">
         <div class="camera-display">
           <video id="video" autoplay playsinline></video>
           <canvas id="canvas"></canvas>
@@ -32,9 +38,9 @@
         <div class="tag top">Keep full body in frame</div>
       </div> -->
 
-      <div class="tip-box"><b>Instruction</b><br>Complete the movement at a comfortable pace. The camera will track your position.</div>
-
       <div class="progress"><span id="testProgress"></span></div>
+
+      <div class="tip-box"><b>Instruction</b><br>Complete the movement at a comfortable pace. The camera will track your position.</div>
 
       <div class="spacer"></div>
 
@@ -51,6 +57,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
 
+  <script>let isTestActive = false</script>
   <script src="{{url_for('static', filename='javascript/main.js')}}"></script>
   <script src="{{url_for('static', filename='javascript/movenet.js')}}"></script>
   <script>initTest()</script>

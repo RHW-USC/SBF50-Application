@@ -1,12 +1,9 @@
 const storeKey = 'spinePlusDemo';
 
 const defaults = {
-  height: '',
   camera: false,
-  location: false,
-  calibrated: false,
-  test: 'single-leg',
-  score: 32,
+  test: null,
+  score: 0,
   results: []
 };
 
@@ -83,58 +80,91 @@ function initChoose() {
    Test
 ---------------------------------------- */
 
+let startTest = false;
+
 function initTest() {
-  let remaining = 30;
   let running = false;
+
+  const totalTime = 30
+  let remaining = totalTime;
+
+  let timerPrep;
   let timer;
+  
+  const prepTime = 7
+  let remainingPrep = prepTime;
 
-  const time = document.querySelector('#timer');
-  const start = document.querySelector('#runTest');
-  const bar = document.querySelector('#testProgress');
+  const timerText = document.querySelector('#timer');
+  const timerLabel = document.querySelector('#timer-label')
 
-  start.onclick = () => {
+  const scoreText = document.querySelector('#score');
+  const startText = document.querySelector('#runTest');
+  const progressBar = document.querySelector('#testProgress');
+
+  timerText.textContent = totalTime + 's';
+
+  startText.onclick = () => {
     if (running) {
       return;
     }
 
-    running = true;
-    start.textContent = 'Testing…';
+    timerText.innerHTML = remainingPrep;
+    timerLabel.innerHTML = 'Get Ready!';
+    startText.innerHTML = 'Move into position!'
 
-    let step = 0;
+    if(!startTest){
+      timerPrep = setInterval(() => {
+        remainingPrep--;
+        timerText.innerHTML = remainingPrep;
+        timerLabel.innerHTML = 'Get Ready!';
+        startText.innerHTML = 'Move Into Position!'
 
-    timer = setInterval(() => {
-      remaining--;
-      step++;
-
-      time.textContent = remaining + 's';
-
-      bar.style.width =
-        ((30 - remaining) / 30 * 100) + '%';
-
-      if (remaining <= 0) {
-        clearInterval(timer);
-
-        const s = save({
-          score: 32 + Math.floor(Math.random() * 8)
-        });
-
-        s.results = [
-          ...(s.results || []),
-          {
-            date: new Date().toLocaleDateString('en-AU'),
-            test: s.test,
-            score: s.score
-          }
-        ];
-
-        save({
-          results: s.results
-        });
-
-        go('results');
-      }
-    }, 1000);
+        if (remainingPrep <= 0){
+          startTest = true;
+          clearInterval(timerPrep);
+          initTest();
+        }
+      }, 1000)
+    }
   };
+
+    if (startTest){
+      isTestActive = true;
+
+      running = true;
+
+      timerLabel.innerHTML = "Remaining Time";
+      startText.textContent = 'Testing…';
+
+      timer = setInterval(() => {
+        remaining--;
+
+        timerText.textContent = remaining + 's';
+        scoreText.textContent = points;
+
+        progressBar.style.width = ((totalTime - remaining) / totalTime * 100) + '%';
+
+        if (remaining <= 0) {
+          startTest = false;
+          isTestActive = false;
+
+          clearInterval(timer);
+
+          const s = save({score: points});
+
+          s.results = [(s.results || []),
+            {
+              date: new Date().toLocaleDateString('en-AU'),
+              test: s.test,
+              score: s.score
+            }];
+
+          save({results: s.results});
+
+          go('results');
+        }
+      }, 1000);  
+    }
 }
 
 /* ----------------------------------------
@@ -144,16 +174,11 @@ function initTest() {
 function initResults() {
   const s = state();
 
-  document.querySelector('#score').textContent =
-    s.score || 32;
+  document.querySelector('#final-score').textContent = s.score || 0;
 
-  document
-    .querySelector('#saveResult')
-    ?.addEventListener('click', () => {
-      toast('Result saved');
-
-      setTimeout(() => go('export'), 500);
-    });
+  document.querySelector('#exportResult')?.addEventListener('click', () => {toast('Result saved');
+    
+  setTimeout(() => go('export'), 500);});
 }
 
 /* ----------------------------------------
@@ -170,7 +195,6 @@ function initExport() {
         [
           JSON.stringify(
             {
-              height: s.height,
               test: s.test,
               score: s.score,
               exportedAt: new Date().toISOString()
@@ -207,27 +231,20 @@ function initPast() {
 
   let results = s.results || [];
 
-  if (!results.length) {
+  if (results.length > 0) {
     results = [
       {
         date: 'Today',
         test: s.test || 'Single Leg Stand',
-        score: s.score || 32
+        score: s.score || 0
       }
     ];
   }
 
-  box.innerHTML = results
-    .slice()
-    .reverse()
-    .map(
-      r => `
-        <div class="past-item">
-          <span class="past-score">${r.score}</span>
-          <div class="past-date">${r.date}</div>
-          <div class="past-title">${r.test || 'Spine Plus assessment'}</div>
-        </div>
-      `
-    )
-    .join('');
+  box.innerHTML = results.slice().reverse().map(
+      r => `<div class="past-item">
+              <span class="past-score">${r.score}</span>
+              <div class="past-date">${r.date}</div>
+              <div class="past-title">${r.test || 'Spine Plus Assessment'}</div>
+            </div>`).join('');
 }
