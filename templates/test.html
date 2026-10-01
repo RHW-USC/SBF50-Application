@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block head %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Test Screen</title>
+{% endblock %}
+
+{% block body %}
+  <div class="app">
+    <div class="topbar">
+      <a class="icon-btn" href="{{ url_for('choose_test') }}">←</a>
+      <span class="kicker">Test screen</span>
+    </div>
+
+    <main class="card">
+      <div class="micro" style="text-align:left">30-Second Sit-to-Stand</div>
+
+      <div class="score-box">
+        <div class="score-label">Time remaining</div>
+        <div class="score" id="timer">30s</div>
+      </div>
+
+      <div class="preview">
+        <div class="camera-display">
+          <video id="video" autoplay playsinline></video>
+          <canvas id="canvas"></canvas>
+        </div>
+      </div>
+
+      <!-- <div class="preview" style="height:220px">
+        <div class="tag top">Keep full body in frame</div>
+      </div> -->
+
+      <div class="tip-box"><b>Instruction</b><br>Complete the movement at a comfortable pace. The camera will track your position.</div>
+
+      <div class="progress"><span id="testProgress"></span></div>
+
+      <div class="spacer"></div>
+
+      <div class="micro" style="margin-top:8px">You can stop at any time.</div>
+      <button class="btn" id="runTest">Start Test →</button>
+    </main>
+  </div>
+
+  <!--
+  Scripts to import MoveNet into user's browser
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
+
+  <script src="{{url_for('static', filename='javascript/main.js')}}"></script>
+  <script src="{{url_for('static', filename='javascript/movenet.js')}}"></script>
+  <script>initTest()</script>
+{% endblock %}

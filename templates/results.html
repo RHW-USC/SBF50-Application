@@ -1,24 +1,45 @@
 {% extends "base.html" %}
 
 {% block head %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Assessment Results</title>
 {% endblock %}
 
 {% block body %}
-
-<div class="container">
-    <div class="camera-display">
-        <video id="video" autoplay playsinline></video>
-        <canvas id="canvas"></canvas>
+  <div class="app">
+    <div class="topbar">
+      <a class="icon-btn" href="{{ url_for('choose_test') }}">←</a>
+      <span class="kicker">Assessment summary</span>
     </div>
 
-    <button id="toggle-camera">Camera</button>
-</div>
+    <main class="card">
+      <h1>Assessment<br>Results</h1>
+      <p class="subtitle">Your Results</p>
 
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
+      <div class="score-box">
+        <div class="score-label">30-Second Sit-to-Stand</div>
+        <div class="score" id="score">32</div>
+      </div>
 
-<script src="{{ url_for('static', filename='javascript/home.js') }}"></script>
+      <h3>Individual results</h3>
 
+      <div class="metric-list">
+        <div class="metric"><span>Finger-to-Floor</span><span>8 cm</span></div>
+        <div class="metric"><span>Single Leg Stand</span><span>32 s</span></div>
+        <div class="metric"><span>McGill 60-Second Core Endurance</span><span>37 s</span></div>
+        <div class="metric"><span>30-Second Sit-to-Stand</span><span id="metricScore">32 reps</span></div>
+      </div>
+
+      <div class="micro">Results are movement-screening measurements and should be interpreted in context.</div>
+
+      <div class="spacer"></div>
+
+      <button class="btn" id="saveResult">Save →</button>
+      <button class="btn secondary" onclick="go('index.html')">Done</button>
+    </main>
+  </div>
+
+  <script src="{{url_for('static', filename='javascript/main.js')}}"></script>
+  <script>initResults()</script>
 {% endblock %}

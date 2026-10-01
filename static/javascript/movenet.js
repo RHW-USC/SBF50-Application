@@ -40,7 +40,6 @@ const sitToStandLimbAngles = {
 
         // -------------------------
         // LEFT ARM
-        // Hands should be straight in front
         // -------------------------
 
         leftUpperArm: {
@@ -66,7 +65,6 @@ const sitToStandLimbAngles = {
 
         // -------------------------
         // RIGHT ARM
-        // Hands should be straight in front
         // -------------------------
 
         rightUpperArm: {
@@ -180,8 +178,162 @@ const sitToStandLimbAngles = {
         }
     },
 
-    standingAngles: {}
+    standingAngles: {
 
+        // -------------------------
+        // SHOULDERS / COLLAR
+        // -------------------------
+
+        collar: {
+            joint1: "left_shoulder",
+            joint2: "right_shoulder",
+            minAngle: 345,
+            maxAngle: 15,
+            minDistance: null,
+            maxDistance: null,
+            withinAngleThreshold: false,
+            withinDistanceThreshold: false,
+        },
+
+        // -------------------------
+        // LEFT ARM
+        // -------------------------
+
+        leftUpperArm: {
+            joint1: "left_shoulder",
+            joint2: "left_elbow",
+            minAngle: 265,
+            maxAngle: 305,
+            minDistance: null,
+            maxDistance: null,
+            withinAngleThreshold: false,
+            withinDistanceThreshold: false,
+        },
+        leftLowerArm: {
+            joint1: "left_elbow",
+            joint2: "left_wrist",
+            minAngle: 20,
+            maxAngle: 50,
+            minDistance: null,
+            maxDistance: null,
+            withinAngleThreshold: false,
+            withinDistanceThreshold: false,
+        },
+
+        // -------------------------
+        // RIGHT ARM
+        // -------------------------
+
+        rightUpperArm: {
+            joint1: "right_shoulder",
+            joint2: "right_elbow",
+            minAngle: 245,
+            maxAngle: 285,
+            minDistance: null,
+            maxDistance: null,
+            withinAngleThreshold: false,
+            withinDistanceThreshold: false,
+        },
+        rightLowerArm: {
+            joint1: "right_elbow",
+            joint2: "right_wrist",
+            minAngle: 120,
+            maxAngle: 150,
+            minDistance: null,
+            maxDistance: null,
+            withinAngleThreshold: false,
+            withinDistanceThreshold: false,
+        },
+
+    // -------------------------
+    // LEFT LEG
+    // -------------------------
+
+    leftThigh: {
+        joint1: "left_hip",
+        joint2: "left_knee",
+        minAngle: 250,
+        maxAngle: 290,
+        minDistance: null,
+        maxDistance: null,
+        withinAngleThreshold: false,
+        withinDistanceThreshold: false,
+    },
+
+    leftCalf: {
+        joint1: "left_ankle",
+        joint2: "left_knee",
+        minAngle: 70,
+        maxAngle: 110,
+        minDistance: null,
+        maxDistance: null,
+        withinAngleThreshold: false,
+        withinDistanceThreshold: false,
+    },
+
+    // -------------------------
+    // RIGHT LEG
+    // -------------------------
+
+    rightThigh: {
+        joint1: "right_knee",
+        joint2: "right_hip",
+        minAngle: 70,
+        maxAngle: 110,
+        minDistance: null,
+        maxDistance: null,
+        withinAngleThreshold: false,
+        withinDistanceThreshold: false,
+    },
+
+    rightCalf: {
+        joint1: "right_ankle",
+        joint2: "right_knee",
+        minAngle: 70,
+        maxAngle: 110,
+        minDistance: null,
+        maxDistance: null,
+        withinAngleThreshold: false,
+        withinDistanceThreshold: false,
+    },
+
+        // -------------------------
+        // TORSO & HIPS
+        // -------------------------
+
+        leftTorso: {
+            joint1: "left_hip",
+            joint2: "left_shoulder",
+            minAngle: 45,
+            maxAngle: 100,
+            minDistance: null,
+            maxDistance: null,
+            withinAngleThreshold: false,
+            withinDistanceThreshold: false,
+        },
+
+        rightTorso: {
+            joint1: "right_hip",
+            joint2: "right_shoulder",
+            minAngle: 45,
+            maxAngle: 100,
+            minDistance: null,
+            maxDistance: null,
+            withinAngleThreshold: false,
+            withinDistanceThreshold: false,
+        },
+
+        hipLine: {
+            joint1: "left_hip",
+            joint2: "right_hip",
+            minAngle: 345,
+            maxAngle: 15,
+            minDistance: null,
+            maxDistance: null,
+            withinAngleThreshold: false,
+            withinDistanceThreshold: false,
+        }
+    }
 };
 
 const currentTest = sitToStandLimbAngles
@@ -323,7 +475,7 @@ function render(pose) {
         }
     }
 
-        Object.values(currentTest.sitAngles).forEach(limb => {
+        Object.values(currentTest.standingAngles).forEach(limb => {
         const kp1 = pose.keypoints[KEYPOINT_DICT[limb.joint1]];
         const kp2 = pose.keypoints[KEYPOINT_DICT[limb.joint2]];
 
@@ -362,8 +514,8 @@ function determineLimbAngle(pose1, pose2, minAngle, maxAngle){
     const angle = (Math.atan2(dir_y, dir_x) * (180 / Math.PI) + 360) % 360;
 
     // Debug specific limb angles
-    if(pose1.name == "left_shoulder" && pose2.name == "right_shoulder")
-       console.log(`normal angle: ${angle}`);
+    // if(pose1.name == "left_shoulder" && pose2.name == "right_shoulder")
+    //    console.log(`normal angle: ${angle}`);
 
     let withinThreshold;
 
@@ -398,7 +550,12 @@ function runFunctionalTests(pose){
 // ----------------------------------------
 
 function sitToStandTest(pose){
-    Object.values(currentTest.sitAngles).forEach(limb => {
+    // Vairable that captures flags for limb thresholds for evaluation
+    let limbThresholds = {}
+
+    Object.values(currentTest.standingAngles).forEach(limb => {
+        limbThresholds[`${limb.joint1} - ${limb.joint2}`] = false;
+        
         // Reset Threshold Flags
         limb.withinAngleThreshold = false;
         limb.withinDistanceThreshold = false;
@@ -414,7 +571,7 @@ function sitToStandTest(pose){
 
             if (limbDistance > limb.minDistance && limbDistance < limb.maxDistance)
                 limb.withinDistanceThreshold = true;
-
+                limbThresholds[`${limb.joint1} - ${limb.joint2}`] = true;
             //return;
         }
 
@@ -425,22 +582,27 @@ function sitToStandTest(pose){
         
         if (limbAngle != null){
             limb.withinAngleThreshold = true;
+            limbThresholds[`${limb.joint1} - ${limb.joint2}`] = true;
         }
     })
+
+    let isUserInPosition = true
+    Object.values(limbThresholds).forEach(limb => {
+        if (limb != true)
+            isUserInPosition = false;
+    })
+
+    if (isUserInPosition)
+        console.log('Yeah!')
 }
+
+toggleCameraTracking();
 
 // ----------------------------------------
 // Camera Toggle & Event Listeners
 // ----------------------------------------
 
-const cameraBtn = document.getElementById("toggle-camera")
 
-cameraBtn.addEventListener("click", toggleCameraTracking)
+// const cameraBtn = document.getElementById("toggle-camera")
 
-
-// To Do: 
-//
-// #Create dynamic detection of limb angle threshold
-// #1.1 Create main dictionary that is swapped between sit and stand phases of test
-// #1.2 Ensure this dictionary has the key pairs as the key for the dictionary
-// #1.3 Use this dictionary to detect the threshold
+// cameraBtn.addEventListener("click", toggleCameraTracking)

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block head %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Spine Plus — Welcome</title>
+{% endblock %}
+
+{% block body %}
+  <div class="app">
+    <div class="topbar">
+      <span class="kicker">Welcome</span>
+    </div>
+
+    <main class="card">
+      <div class="kicker"></div>
+
+      <div style="border:1px solid #ddd;border-radius:5px;padding:10px;margin-top:8px">
+        <h3>Spine Plus</h3>
+        <div class="micro">Movement assessment</div>
+
+        <div class="preview" style="height:92px;margin:10px 0 5px">
+
+        </div>
+
+        <h2 style="text-align:center;font-size:15px;margin:4px 0">Spine Plus</h2>
+        <div class="micro">A simple movement assessment using your phone camera.</div>
+      </div>
+
+      <div class="bullets">
+        <div class="bullet"><span class="check">✓</span><span><b>Simple Tests</b><br>Quick movement checks you can complete at home.</span></div>
+        <div class="bullet"><span class="check">✓</span><span><b>Guided Assessment</b><br>Clear instructions and camera positioning.</span></div>
+        <div class="bullet"><span class="check">✓</span><span><b>Track Your Progress</b><br>Keep previous results together.</span></div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <a class="btn" href="{{ url_for('choose_test') }}">Get Started →</a>
+      <a class="btn secondary" href="{{ url_for('results') }}">Learn More</a>
+
+      <div class="micro" style="margin-top:10px">Movement screening is not a diagnosis.</div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+{% endblock %}

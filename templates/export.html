@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block head %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Export & Share Results</title>
+{% endblock %}
+
+{% block body %}
+  <div class="app">
+    <div class="topbar">
+      <a class="icon-btn" href="{{ url_for('results') }}">←</a>
+      <span class="kicker">Export & Share Results</span>
+    </div>
+
+    <main class="card">
+      <h2>Export & Share Results</h2>
+
+      <div class="export-card">
+        <div class="ready"><span class="check">✓</span>Your result is ready to save</div>
+        <div class="micro" style="text-align:left;margin-top:7px">Export a compact JSON record containing your assessment measurements.</div>
+      </div>
+
+      <div class="export-card">
+        <div class="field-label">Assessment date</div>
+        <div class="micro" style="text-align:left" id="date"></div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <button class="btn" id="exportBtn">Export JSON →</button>
+      <button class="btn secondary" onclick="go('past-results.html')">View Past Results</button>
+
+      <div class="micro" style="margin-top:9px">Only the assessment data is exported.</div>
+    </main>
+  </div>
+
+  <script src="{{url_for('static', filename='javascript/main.js')}}"></script>
+  <script>document.querySelector('#date').textContent = new Date().toLocaleDateString('en-AU'); initExport()</script>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block head %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Past Results</title>
+{% endblock %}
+
+{% block body %}
+  <div class="app">
+    <div class="topbar">
+      <a class="icon-btn" href="{{ url_for('/')}}">←</a>
+      <span class="kicker">Past Results</span>
+    </div>
+
+    <main class="card">
+      <h2>Past results</h2>
+      <p class="subtitle" style="margin-bottom:12px">View your previous assessment measurements.</p>
+
+      <div id="pastList"></div>
+
+      <div class="spacer"></div>
+
+      <button class="btn" onclick="go('index.html')">New Assessment →</button>
+    </main>
+  </div>
+
+  <script src="{{url_for('static', filename='javascript/main.js')}}"></script>
+  <script>initPast()</script>
+{% endblock %}

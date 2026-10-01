@@ -1,11 +1,350 @@
-body{
-    background-color: yellow;
+
+
+:root {
+  --bg: #f5f5f3;
+  --card: #ffffff;
+  --ink: #171717;
+  --muted: #8d8d88;
+  --line: #deded9;
+  --soft: #f0f0ec;
+  --radius: 10px;
+
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
 }
 
-.container {
-    width: 100%;
-    margin-top: 18em;
+* {
+  box-sizing: border-box;
 }
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+}
+
+body {
+  min-height: 100dvh;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ----------------------------------------
+   App Layout
+---------------------------------------- */
+
+.app {
+  width: min(100%, 430px);
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: 18px 16px 22px;
+}
+
+.topbar {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.kicker {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.icon-btn {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  color: #555;
+  font-size: 15px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+/* ----------------------------------------
+   Cards
+---------------------------------------- */
+
+.card {
+  background: var(--card);
+  border: 1px solid #e8e8e3;
+  border-radius: var(--radius);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+  padding: 18px;
+  min-height: calc(100dvh - 76px);
+  display: flex;
+  flex-direction: column;
+}
+
+.card.flat {
+  box-shadow: none;
+}
+
+/* ----------------------------------------
+   Typography
+---------------------------------------- */
+
+.serif {
+  font-family: var(--serif);
+}
+
+h1 {
+  font: 600 24px/1.08 var(--serif);
+  text-align: center;
+  margin: 4px 0 7px;
+}
+
+h2 {
+  font: 600 18px/1.12 var(--serif);
+  margin: 0 0 8px;
+}
+
+h3 {
+  font: 600 13px/1.2 var(--serif);
+  margin: 0 0 5px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #777;
+  font-size: 9px;
+  line-height: 1.45;
+  margin: 0 auto 20px;
+  max-width: 260px;
+}
+
+.micro {
+  text-align: center;
+  color: #9a9a95;
+  font-size: 8px;
+  line-height: 1.45;
+  margin: 1em;
+}
+
+.section-title {
+  text-align: center;
+  font: 600 16px var(--serif);
+  margin: 14px 0 5px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+/* ----------------------------------------
+   Buttons
+---------------------------------------- */
+
+.btn {
+  width: 100%;
+  border: 1px solid #202020;
+  border-radius: 4px;
+  background: #202020;
+  color: #fff;
+  height: 38px;
+  font-size: 10px;
+  cursor: pointer;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn.secondary {
+  background: #fff;
+  color: #171717;
+  border-color: #cfcfc9;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn + .btn {
+  margin-top: 8px;
+}
+
+/* ----------------------------------------
+   Form Fields
+---------------------------------------- */
+
+.field-label {
+  font-size: 8px;
+  color: #6f6f69;
+  margin-bottom: 5px;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  border: 1px solid #bdbdb7;
+  border-radius: 3px;
+  height: 40px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.input-row input {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
+.input-unit {
+  font-size: 9px;
+  color: #777;
+  padding: 0 10px;
+  border-left: 1px solid #ddd;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.notice {
+  font-size: 8px;
+  color: #888;
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* ----------------------------------------
+   Why / Information Section
+---------------------------------------- */
+
+.why {
+  margin-top: 24px;
+}
+
+.why p {
+  font-size: 9px;
+  color: #777;
+  line-height: 1.5;
+  text-align: center;
+  margin: 0 auto;
+  max-width: 285px;
+}
+
+.bullets {
+  display: grid;
+  gap: 7px;
+  margin: 11px 0 14px;
+}
+
+.bullet {
+  border: 1px solid #deded9;
+  border-radius: 5px;
+  padding: 8px 9px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 8px;
+  color: #555;
+}
+
+.check {
+  width: 15px;
+  height: 15px;
+  border: 1px solid #aaa;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 8px;
+  flex: none;
+}
+
+/* ----------------------------------------
+   Camera Mockup
+---------------------------------------- */
+
+.mock-camera {
+  height: 145px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background: linear-gradient(
+    #eaeaea 0 68%,
+    #d4d4d4 68%
+  );
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.camera-lens {
+  width: 38px;
+  height: 38px;
+  border: 4px solid #fff;
+  border-radius: 50%;
+  background: #202633;
+  box-shadow: 0 0 0 2px #777;
+}
+
+.camera-person {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 68px;
+  height: 76px;
+}
+
+.camera-person:before {
+  content: "";
+  position: absolute;
+  left: 24px;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #222;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.camera-person:after {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 25px;
+  width: 50px;
+  height: 43px;
+  border: 1px solid #222;
+  border-radius: 8px 8px 3px 3px;
+  background: #ddd;
+}
+
+.tip-box {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 8px;
+  margin-top: 8px;
+  font-size: 8px;
+  color: #666;
+}
+
+/* ----------------------------------------
+   Preview
+---------------------------------------- */
 
 .camera-display{
     display: flex;
@@ -19,4 +358,385 @@ body{
 
 #video {
     position: absolute;
+}
+
+.preview {
+  height: 242px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background: #d7d7d7;
+  position: relative;
+  overflow: hidden;
+  margin: 8px 0;
+}
+
+.preview:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 49.5%,
+      rgba(255, 255, 255, 0.6) 50%,
+      transparent 50.5%
+    ),
+    linear-gradient(
+      transparent 49.5%,
+      rgba(255, 255, 255, 0.6) 50%,
+      transparent 50.5%
+    );
+}
+
+.preview .person {
+  position: absolute;
+  left: 50%;
+  bottom: 13px;
+  transform: translateX(-50%);
+  width: 66px;
+  height: 125px;
+}
+
+.person .head {
+  position: absolute;
+  left: 23px;
+  top: 2px;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #111;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.person .body {
+  position: absolute;
+  left: 10px;
+  top: 26px;
+  width: 46px;
+  height: 53px;
+  border: 1px solid #111;
+  background: #efefef;
+}
+
+.person .leg1,
+.person .leg2 {
+  position: absolute;
+  top: 78px;
+  width: 1px;
+  height: 46px;
+  background: #111;
+}
+
+.person .leg1 {
+  left: 28px;
+}
+
+.person .leg2 {
+  left: 38px;
+}
+
+.person .arm1,
+.person .arm2 {
+  position: absolute;
+  top: 31px;
+  width: 1px;
+  height: 45px;
+  background: #111;
+}
+
+.person .arm1 {
+  left: 10px;
+  transform: rotate(8deg);
+}
+
+.person .arm2 {
+  right: 10px;
+  transform: rotate(-8deg);
+}
+
+/* ----------------------------------------
+   Tags
+---------------------------------------- */
+
+.tag {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  padding: 3px 5px;
+  font-size: 7px;
+}
+
+.tag.top {
+  top: 8px;
+  left: 8px;
+}
+
+.tag.side {
+  right: 8px;
+  top: 50%;
+}
+
+/* ----------------------------------------
+   Segmented Controls
+---------------------------------------- */
+
+.segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin: 7px 0;
+}
+
+.segmented button {
+  height: 28px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 8px;
+}
+
+.segmented button.active {
+  background: #222;
+  color: #fff;
+  border-color: #222;
+}
+
+/* ----------------------------------------
+   Progress
+---------------------------------------- */
+
+.progress {
+  height: 6px;
+  background: #eee;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 6px 0 10px;
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: #222;
+  transition: width 0.2s;
+}
+
+/* ----------------------------------------
+   Test Selection
+---------------------------------------- */
+
+.test-list {
+  display: grid;
+  gap: 6px;
+  margin: 7px 0;
+}
+
+.test-option {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background: #fff;
+  padding: 8px 9px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.test-option.active {
+  border-color: #222;
+}
+
+.test-option.unavailable{
+  border-color: gray;
+  background-color: lightgray;
+  color: gray;
+  cursor: auto;
+}
+
+.test-option strong {
+  font-size: 9px;
+}
+
+.test-option small {
+  display: block;
+  color: #999;
+  font-size: 7px;
+  margin-top: 2px;
+}
+
+.radio {
+  width: 14px;
+  height: 14px;
+  border: 1px solid #999;
+  border-radius: 50%;
+  position: relative;
+}
+
+.test-option.active .radio:after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background: #222;
+  border-radius: 50%;
+}
+
+/* ----------------------------------------
+   Scores & Metrics
+---------------------------------------- */
+
+.score-box {
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 13px;
+  margin: 8px 0;
+}
+
+.score-label {
+  font-size: 8px;
+  color: #777;
+}
+
+.score {
+  font: 600 29px var(--serif);
+  margin-top: 2px;
+}
+
+.metric-list {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 7px 0;
+}
+
+.metric {
+  display: flex;
+  justify-content: space-between;
+  padding: 9px 10px;
+  border-bottom: 1px solid #e7e7e3;
+  font-size: 9px;
+}
+
+.metric:last-child {
+  border-bottom: 0;
+}
+
+.metric span:last-child {
+  font-weight: 600;
+}
+
+.result-head {
+  font-size: 8px;
+  color: #777;
+  margin: 8px 0 3px;
+}
+
+/* ----------------------------------------
+   Export
+---------------------------------------- */
+
+.export-card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 11px;
+  margin-top: 8px;
+}
+
+.ready {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.ready .check {
+  border-color: #222;
+}
+
+/* ----------------------------------------
+   Past Results
+---------------------------------------- */
+
+.past-item {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 9px;
+  margin-bottom: 7px;
+}
+
+.past-date {
+  font-size: 8px;
+  color: #777;
+  margin-bottom: 4px;
+}
+
+.past-title {
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.past-score {
+  float: right;
+  font: 600 12px var(--serif);
+}
+
+/* ----------------------------------------
+   Navigation
+---------------------------------------- */
+
+.navrow {
+  display: flex;
+  gap: 7px;
+  margin-top: 9px;
+}
+
+.navrow .btn {
+  flex: 1;
+}
+
+/* ----------------------------------------
+   Toast
+---------------------------------------- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  background: #202020;
+  color: #fff;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.2s;
+}
+
+.toast.show {
+  opacity: 1;
+}
+
+/* ----------------------------------------
+   Responsive
+---------------------------------------- */
+
+@media (max-height: 650px) {
+  .app {
+    padding-top: 10px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  .mock-camera {
+    height: 115px;
+  }
+
+  .preview {
+    height: 135px;
+  }
 }
