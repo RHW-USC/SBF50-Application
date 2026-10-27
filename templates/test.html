@@ -14,7 +14,7 @@
     </div>
 
     <main class="card">
-      <div class="micro" style="text-align:left">30-Second Sit-to-Stand</div>
+      <div class="micro" id="test-label" style="text-align:left"></div>
 
       <div class="score-box">
         <div class="timer-container">
@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <div class="preview" style="height:220px">
+      <div class="preview" style="height:268px">
         <div class="camera-display">
           <video id="video" autoplay playsinline></video>
           <canvas id="canvas"></canvas>
@@ -49,16 +49,14 @@
     </main>
   </div>
 
-  <!--
-  Scripts to import MoveNet into user's browser
-  -->
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs"
+  crossorigin="anonymous"></script>
 
-  <script>let isTestActive = false</script>
+  <script>
+  let isTestActive = false;
+  let points = 0;
+  </script>
   <script src="{{url_for('static', filename='javascript/main.js')}}"></script>
-  <script src="{{url_for('static', filename='javascript/movenet.js')}}"></script>
+  <script type="module" src="{{url_for('static', filename='javascript/track_patient.js')}}"></script>
   <script>initTest()</script>
 {% endblock %}
