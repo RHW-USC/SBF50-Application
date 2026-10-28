@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block head %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Test Screen</title>
+{% endblock %}
+
+{% block body %}
+  <div class="app">
+    <div class="topbar">
+      <a class="icon-btn" href="{{ url_for('choose_test') }}">←</a>
+      <span class="kicker">Instructions</span>
+    </div>
+
+    <main class="card">
+      <div class="micro" id="test-label" style="text-align:left"></div>
+
+      <!-- <div class="preview" style="height:220px">
+        <div class="tag top">Keep full body in frame</div>
+      </div> -->
+
+      <div class="tip-box" style="text-align: center;"><b>Instructions</b>
+        <br>
+        <br>
+        <img id="instructionImg" class="instructionImg" src="" alt="" style="width: fit-content;">
+        <p id="instructions">Complete the movement at a comfortable pace. The camera will track your position.</p>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="warning-card">Stop the test immediately if you experience any pain, discomfort, dizziness, or unusual symptoms. Do not force the movement beyond your comfortable range of motion.</div>
+
+      <a class="btn" id="startTest">I Understand</a>
+    </main>
+
+  </div>
+
+  <script src="{{url_for('static', filename='javascript/main.js')}}"></script>
+  <script>initInstructions()</script>
+
+{% endblock %}

@@ -406,10 +406,6 @@ function determineLimbAngle(pose1, pose2, minAngle, maxAngle){
     // Convert the direction between the points to an angle from 0 to 360 degrees.
     const angle = (Math.atan2(dir_y, dir_x) * (180 / Math.PI) + 360) % 360;
 
-    // Optional debug output for checking the angle between selected joints.
-    // if(pose1.name == "left_shoulder" && pose2.name == "right_shoulder")
-    //    console.log(`normal angle: ${angle}`);
-
     let withinThreshold;
 
     if (minAngle < maxAngle)
@@ -493,6 +489,9 @@ function functionalTest(pose, currentTest){
             const maxAngle = limb.maxAngle;    
 
             const limbAngle = determineLimbAngle(joint1, joint2, minAngle, maxAngle)
+
+            if (limb.joint1 == "left_shoulder" && limb.joint2 == "left_elbow")
+                console.log(`${limb.joint1} - ${limb.joint2}: ${determineLimbAngle(joint1, joint2, 0, 360)}`);
 
             if (limbAngle != null){
                 limb.withinAngleThreshold = true;

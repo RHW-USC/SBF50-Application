@@ -128,6 +128,24 @@ a {
   box-shadow: none;
 }
 
+.warning-card {
+  background: #ffaaa8;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-size: 15px;
+  line-height: 1.55;
+  box-shadow: none;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.warning-card.flat {
+  box-shadow: none;
+}
+
 /* ----------------------------------------
    Typography
 ---------------------------------------- */
@@ -481,6 +499,14 @@ h3 {
 .preview:has(img) img {
   display: block;
   width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.instructionImg {
+  display: block;
+  width: 100%;
+  max-width: 100%;
   height: auto;
   object-fit: contain;
 }

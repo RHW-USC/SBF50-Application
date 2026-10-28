@@ -19,9 +19,24 @@ const testDetails = {
     name: "McGill 60-Second Core Endurance",
     prepTime: 7,
     duration: 60,
-    scoreType: "",
+    scoreType: "s",
   }
 }
+
+const testInstructions = {
+    "sit-to-stand": {
+      info: "Sit on a sturdy chair with your feet flat on the floor and your arms crossed over your chest. Keep your arms in this position throughout the entire test.\n\nOnce you start the test, you will have 7 seconds to get into the correct starting position. Use this time to sit comfortably on the chair, position your feet securely on the floor, and cross your arms over your chest.\n\nWhen the countdown finishes, begin standing up fully and sitting back down on the chair repeatedly. Complete as many repetitions as possible before the timer reaches zero. Make sure you stand upright each time and return to a seated position before starting the next repetition.\n\nKeep your arms crossed over your chest at all times, and avoid using your hands to push yourself up from the chair or assist with the movement.\n\nTry to maintain a steady pace while ensuring each repetition is performed safely and correctly. The test will end automatically when the timer reaches zero.",
+      image: "static/images/SitToStand Example.png"
+    },
+    "finger-to-floor": {
+      info: "Stand upright with your feet flat on the floor and your legs straight. Keep your knees extended throughout the test without bending them.\n\nBefore starting, place your device at floor level, positioned near your feet. Have the camera face towards the front of your body.\n\nEnsure the camera has a clear view of your entire body, including your feet, legs, torso, and hands. This will help provide the best possible angle for tracking your movement.\n\nOnce the test begins, you will have 10 seconds to bend forward at your waist and lower your arms towards the ground. Keep your legs straight and attempt to bring your fingertips as close to the floor as possible without bending your knees. Hold the lowest comfortable position you can reach until the timer finishes.\n\nMove slowly and avoid bouncing or forcing yourself further than is comfortable. Your result will be based on how close your fingertips get to the floor.",
+      image: "static/images/FingerToFloor Example.png"
+    },
+    'core-endurance': {
+      info: "Sit on the floor with your legs extended in front of you and your arms crossed over your chest. Keep your knees slightly bent. They do not need to be bent to an exact angle.\n\nBefore starting, place your phone on the floor at approximately the same height as your seated body, facing towards your left side. Ensure the camera has a clear view of your entire upper body and legs so your position can be tracked accurately.\n\nOnce the test begins, lean your upper body backwards to approximately 50 degrees from the upright position. Hold this position for as long as you can while keeping your arms crossed over your chest and maintaining a steady posture.\n\nTry to avoid leaning further backwards or returning to an upright position during the test. The test will end when you can no longer maintain the required position, or if you maintain the position for 60 seconds",
+      image: "static/images/McGill Example.png"
+    }
+  };
 
 const defaults = {
   camera: false,
@@ -70,11 +85,20 @@ function go(url) {
    Choose Test
 ---------------------------------------- */
 
+let hasLoadedPage = false;
+
 function initChoose() {
   const options = document.querySelectorAll('.test-option');
 
+  if (!hasLoadedPage){
+    save({test: 'sit-to-stand'});
+    console.log('sit-to-stand');
+    hasLoadedPage = true;
+  }
+    
   options.forEach(option => {
     if (!option.classList.contains("unavailable")){
+
         option.addEventListener('click', () => {
             options.forEach(x => x.classList.remove('active'));
 
@@ -84,6 +108,23 @@ function initChoose() {
         });
     }
   });
+
+  document.querySelector('#startTest')?.addEventListener('click', () => go('instructions'));
+}
+
+/* ----------------------------------------
+   Instructions
+---------------------------------------- */
+
+function initInstructions(){
+  const s = state();
+  const selectedTest = s.test;
+
+  const instructionText = document.getElementById("instructions");
+  const instructionExampleImg = document.getElementById("instructionImg");
+
+  instructionText.innerHTML = testInstructions[selectedTest]["info"].replace(/\n\n/g, '<br><br>');
+  instructionExampleImg.src = testInstructions[selectedTest]["image"];
 
   document.querySelector('#startTest')?.addEventListener('click', () => go('test'));
 }

@@ -10,6 +10,10 @@ def home():
 def choose_test():
     return render_template("choose-test.html")
 
+@app.route("/instructions")
+def instruction():
+    return render_template("instructions.html")
+
 @app.route("/test")
 def test():
     return render_template("test.html")
