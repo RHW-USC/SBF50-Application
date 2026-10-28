@@ -1,0 +1,45 @@
+
+{% extends "base.html" %}
+
+{% block head %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Height</title>
+{% endblock %}
+
+{% block body %}
+  <div class="app">
+    <div class="topbar">
+      <a class="icon-btn" href="{{ url_for('home') }}">←</a>
+      <span class="kicker">Height</span>
+    </div>
+
+    <main class="card">
+      <h2 style="text-align: center;">Enter Your Height</h2>
+      <p style="text-align: center;">Please enter your height in centimetres (cm).</p>
+
+      <form id="heightForm">
+        <label class="field-label" for="heightInput">Height (cm)</label>
+
+        <div class="input-row">
+          <input type="number"
+            id="heightInput"
+            name="height"
+            min="50"
+            max="250"
+            step="0.1"
+            placeholder="e.g. 183"
+            required>
+          <span class="input-unit">cm</span>
+        </div>
+
+        <p class="notice" id="heightMessage" aria-live="polite"></p>
+
+        <a class="btn" id="submitHeight">Submit Height</a>
+      </form>
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='javascript/main.js') }}"></script>
+  <script>initHeight()</script>
+{% endblock %}

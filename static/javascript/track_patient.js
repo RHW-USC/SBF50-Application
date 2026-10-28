@@ -79,6 +79,8 @@ import { mcGillCoreEnduranceAngles } from "./test_limb_parameters/mcgill_core_en
 // ----------------------------------------
 
 // References used to display the live camera feed and draw the pose overlay.
+const s = state();
+
 const video = document.getElementById("video");
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d'); // Get the 2D drawing context
@@ -88,7 +90,8 @@ let animationStopID;
 
 let trackHands = false;
 
-let patientHeight = 1854.2;
+let patientHeight = s.height;
+console.log(patientHeight);
 
 // Tracks whether pose detection is currently running.
 let isTrackingActive = false;
@@ -534,7 +537,13 @@ function sitToStandTest(pose){
 // ----------------------------------------
 
 // Evaluates the configured joint positions and records wrist-to-ankle distance.
+
 function fingerTipToFloorTest(pose, handResult) {
+    const currentTest = fingerTipToFloorAngles;
+    const limbThresholds = functionalTest(pose, currentTest);
+
+    isUserInPosition = Object.keys(limbThresholds).length > 0 && Object.values(limbThresholds).every(limb => limb === true);
+
     if (!handResult || !handResult.landmarks || handResult.landmarks.length === 0)
         return;
 
@@ -556,24 +565,17 @@ function fingerTipToFloorTest(pose, handResult) {
     if (visibleFeet.length == 0)
         return;
 
-    // Image y-coordinates increase downwards, so the greatest y is lowest.
     const floorY = Math.max(...visibleFeet.map(foot => foot.y));
-
-    // Estimate the person's height in pixels from the nose to the floor.
     const bodyHeightPixels = floorY - nose.y;
 
-    // Reject measurements when the full body is too small or invalid.
     if (!Number.isFinite(bodyHeightPixels) || bodyHeightPixels < 200)
         return;
 
-    // patientHeight is in millimetres, so this ratio is mm per pixel.
     const ratio = patientHeight / bodyHeightPixels;
 
     if (!Number.isFinite(ratio) || ratio <= 0)
         return;
 
-    // Calculate the vertical distance from each detected index fingertip
-    // to the estimated floor line.
     const distances = [];
 
     for (const hand of handResult.landmarks) {
@@ -585,7 +587,6 @@ function fingerTipToFloorTest(pose, handResult) {
         const fingertipY = fingertip.y * canvas.height;
         const distancePixels = floorY - fingertipY;
 
-        // Ignore fingertips that appear below the estimated floor line.
         if (distancePixels >= 0)
             distances.push(distancePixels);
     }
@@ -593,22 +594,20 @@ function fingerTipToFloorTest(pose, handResult) {
     if (distances.length === 0)
         return;
 
-    // Average the measurements from the detected fingertips.
     const averageDistancePixels =
         distances.reduce((total, distance) => total + distance, 0) / distances.length;
 
-    // Convert pixels to millimetres, then centimetres.
     const averageDistanceCm = averageDistancePixels * ratio / 10;
 
     if (!Number.isFinite(averageDistanceCm))
         return;
 
-    // Keep the smallest distance achieved during the test.
-    if (averageDistanceCm < currentFTFScore) {
+    if (averageDistanceCm < currentFTFScore && isUserInPosition) {
         currentFTFScore = averageDistanceCm;
         points = Math.trunc(currentFTFScore);
     }
 }
+
 
 // ----------------------------------------
 // McGill Core Endurance Test

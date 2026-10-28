@@ -6,6 +6,10 @@ app = Flask(__name__)
 def home():
     return render_template("index.html")
 
+@app.route("/height-calibration")
+def height_calibration():
+    return render_template("height-calibration.html")
+
 @app.route("/choose-test")
 def choose_test():
     return render_template("choose-test.html")

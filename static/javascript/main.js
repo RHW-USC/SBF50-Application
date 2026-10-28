@@ -40,12 +40,15 @@ const testInstructions = {
   }
 };
 
+
 const defaults = {
   camera: false,
   test: null,
   score: 0,
-  results: []
+  results: [],
+  height: null
 };
+
 
 /* ----------------------------------------
    Storage
@@ -148,6 +151,68 @@ function go(url) {
   location.href = url;
 }
 
+
+/* ----------------------------------------
+   Height
+---------------------------------------- */
+
+// Retrieve the user's saved height in centimetres.
+function getHeight() {
+  const height = state().height;
+
+  return Number.isFinite(height) && height > 0
+    ? height
+    : null;
+}
+
+// Reset the saved height without affecting test results.
+function resetHeight() {
+  save({ height: null });
+}
+
+// Initialise the height page.
+function initHeight() {
+  const form = document.getElementById('heightForm');
+  const heightInput = document.getElementById('heightInput');
+  const heightMessage = document.getElementById('heightMessage');
+  const heightButton = document.getElementById('submitHeight');
+
+  if (!form || !heightInput || !heightButton) return;
+
+  // Display the previously saved height, if available.
+  const savedHeight = getHeight();
+
+  if (savedHeight !== null) {
+    heightInput.value = savedHeight;
+  }
+
+  heightButton.addEventListener('click', event => {
+    event.preventDefault();
+
+    const height = Number(heightInput.value);
+
+    // Validate the height before saving it.
+    if (heightInput.value.trim() === '' || !Number.isFinite(height) || height < 500 || height > 2500) {
+      heightInput.setCustomValidity('Please enter a height (cm) between 500 and 2500 cm.');
+      heightInput.reportValidity();
+      heightInput.setCustomValidity('');
+      return;
+    }
+
+    // Save the height in browser storage.
+    save({ height });
+
+    if (heightMessage) {
+      heightMessage.textContent = 'Height saved successfully.';
+    }
+
+    // Return to the Choose Test page.
+    go('choose-test');
+  });
+}
+
+
+
 /* ----------------------------------------
    Choose Test
 ---------------------------------------- */
@@ -158,10 +223,8 @@ function renderChooseProgress(options) {
   const count = available.filter(option => completed.has(option.dataset.test)).length;
 
   // Use the IDs when available, or the original page elements.
-  const countText = document.querySelector('#completionCount')
-    || document.querySelector('.micro');
-  const progressBar = document.querySelector('#completionProgress')
-    || document.querySelector('.progress span');
+  const countText = document.querySelector('#completionCount') || document.querySelector('.micro');
+  const progressBar = document.querySelector('#completionProgress') || document.querySelector('.progress span');
 
   if (countText) {
     countText.textContent = `${count} of ${available.length} completed`;
@@ -202,9 +265,7 @@ function initChoose() {
     !option.classList.contains('unavailable') && testDetails[option.dataset.test]
   );
 
-  const selected = testDetails[savedTest]
-    ? savedTest
-    : firstAvailable?.dataset.test || 'sit-to-stand';
+  const selected = testDetails[savedTest] ? savedTest : firstAvailable?.dataset.test || 'sit-to-stand';
 
   save({ test: selected });
 
@@ -300,10 +361,9 @@ function initTest() {
       completedAt: completedAt.toISOString()
     };
 
-    save({
-      score: result.score,
-      results: [...state().results, result]
-    });
+    if (selected !== 'finger-to-floor' || result.score !== 0) {
+        save({ score: result.score, results: [...state().results, result] });
+    }
 
     go('results');
   }
