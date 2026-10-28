@@ -731,6 +731,29 @@ h3 {
   border-radius: 50%;
 }
 
+/* Completed tests */
+
+.test-option.completed:not(.active) {
+  border-color: #b8dcca;
+  background: #f4fbf7;
+}
+
+.test-option.completed.active {
+  border-color: var(--blue);
+  background: var(--blue-tint);
+}
+
+.completion-status {
+  display: block;
+  width: fit-content;
+  margin-top: 8px;
+  color: #1a7f54;
+  font-family: var(--micro-font);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
 /* ----------------------------------------
    Scores & Metrics
 ---------------------------------------- */
@@ -815,6 +838,25 @@ h3 {
   margin: 18px 0 6px;
 }
 
+/* Dates displayed beneath best-result scores */
+
+.metric small.result-date {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.metric .not-completed {
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 400;
+}
+
 /* ----------------------------------------
    Export
 ---------------------------------------- */
@@ -824,6 +866,12 @@ h3 {
   border-radius: var(--radius);
   padding: 18px;
   margin-top: 14px;
+}
+
+.not-completed{
+  font-size: 4px;
+  text-align: center;
+  width: 5em;
 }
 
 .ready {
@@ -840,38 +888,47 @@ h3 {
   border-color: #1a7f54;
 }
 
-/* ----------------------------------------
-   Past Results
----------------------------------------- */
-
-.past-item {
+.delete-result {
+  position: absolute;
+  top: 12px;
+  right: 12px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 18px;
-  margin-bottom: 12px;
-}
-
-.past-date {
-  font-family: var(--micro-font);
+  border-radius: var(--pill);
+  background: #fff;
+  color: #b42318;
+  padding: 5px 10px;
+  font: inherit;
   font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.delete-result:hover {
+  background: #fff4f2;
+  border-color: #b42318;
+}
+
+/* Delete all results button */
+
+.btn.danger {
+  color: #b42318;
+  border-color: #c64b43;
+  background: #fff;
+}
+
+.btn.danger:hover {
+  color: #8f1d16;
+  border-color: #8f1d16;
+  background: #fff4f2;
+}
+
+/* Message displayed when there are no saved results */
+
+.empty-results {
   color: var(--muted);
-  margin-bottom: 6px;
-}
-
-.past-title {
-  font-size: 17px;
-  font-weight: 500;
-  letter-spacing: var(--tracking);
-}
-
-.past-score {
-  float: right;
-  font: 600 23px var(--serif);
-  letter-spacing: var(--tracking);
-  color: var(--blue-deep);
+  font-size: 15px;
+  line-height: 1.55;
+  text-align: center;
+  padding: 20px 8px;
 }
 
 /* ----------------------------------------

@@ -22,10 +22,6 @@ def test():
 def results():
     return render_template("results.html")
 
-@app.route("/past-results")
-def past_results():
-    return render_template("past-results.html")
-
 @app.route("/export")
 def export():
     return render_template("export.html")

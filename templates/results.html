@@ -15,27 +15,18 @@
 
     <main class="card">
       <h1>Assessment<br>Results</h1>
-      <p class="subtitle">Your Results</p>
+      <p class="subtitle">Your latest result</p>
 
-      <div class="score-box">
-        <div class="score-label"></div>
-        <div id="final-score">0</div>
-      </div>
-
-      <!-- <h3>Individual results</h3>
-
-      <div class="metric-list">
-        <div class="metric"><span>Finger-to-Floor</span><span>8 cm</span></div>
-        <div class="metric"><span>Single Leg Stand</span><span>32 s</span></div>
-        <div class="metric"><span>McGill 60-Second Core Endurance</span><span>37 s</span></div>
-        <div class="metric"><span>30-Second Sit-to-Stand</span><span id="metricScore">32 reps</span></div>
-      </div> -->
+      <h3>Best Results</h3>
+      <p class="micro" style="text-align:left">Your personal best for each test is saved in this browser until you delete it.</p>
+      <div class="metric-list" id="bestResults"></div>
 
       <div class="micro">Results are movement-screening measurements and should be interpreted in context.</div>
 
       <div class="spacer"></div>
 
-      <button class="btn" id="exportResult">Export</button>
+      <button class="btn" id="exportResult" type="button">Download Results</button>
+      <button class="btn secondary danger" id="deleteResults" type="button">Delete Saved Results</button>
       <a class="btn secondary" href="{{ url_for('home') }}">Done</a>
     </main>
   </div>

@@ -21,22 +21,24 @@ const testDetails = {
     duration: 60,
     scoreType: "s",
   }
-}
+};
 
 const testInstructions = {
-    "sit-to-stand": {
-      info: "Sit on a sturdy chair with your feet flat on the floor and your arms crossed over your chest. Keep your arms in this position throughout the entire test.\n\nOnce you start the test, you will have 7 seconds to get into the correct starting position. Use this time to sit comfortably on the chair, position your feet securely on the floor, and cross your arms over your chest.\n\nWhen the countdown finishes, begin standing up fully and sitting back down on the chair repeatedly. Complete as many repetitions as possible before the timer reaches zero. Make sure you stand upright each time and return to a seated position before starting the next repetition.\n\nKeep your arms crossed over your chest at all times, and avoid using your hands to push yourself up from the chair or assist with the movement.\n\nTry to maintain a steady pace while ensuring each repetition is performed safely and correctly. The test will end automatically when the timer reaches zero.",
-      image: "static/images/SitToStand Example.png"
-    },
-    "finger-to-floor": {
-      info: "Stand upright with your feet flat on the floor and your legs straight. Keep your knees extended throughout the test without bending them.\n\nBefore starting, place your device at floor level, positioned near your feet. Have the camera face towards the front of your body.\n\nEnsure the camera has a clear view of your entire body, including your feet, legs, torso, and hands. This will help provide the best possible angle for tracking your movement.\n\nOnce the test begins, you will have 10 seconds to bend forward at your waist and lower your arms towards the ground. Keep your legs straight and attempt to bring your fingertips as close to the floor as possible without bending your knees. Hold the lowest comfortable position you can reach until the timer finishes.\n\nMove slowly and avoid bouncing or forcing yourself further than is comfortable. Your result will be based on how close your fingertips get to the floor.",
-      image: "static/images/FingerToFloor Example.png"
-    },
-    'core-endurance': {
-      info: "Sit on the floor with your legs extended in front of you and your arms crossed over your chest. Keep your knees slightly bent. They do not need to be bent to an exact angle.\n\nBefore starting, place your phone on the floor at approximately the same height as your seated body, facing towards your left side. Ensure the camera has a clear view of your entire upper body and legs so your position can be tracked accurately.\n\nOnce the test begins, lean your upper body backwards to approximately 50 degrees from the upright position. Hold this position for as long as you can while keeping your arms crossed over your chest and maintaining a steady posture.\n\nTry to avoid leaning further backwards or returning to an upright position during the test. The test will end when you can no longer maintain the required position, or if you maintain the position for 60 seconds",
-      image: "static/images/McGill Example.png"
-    }
-  };
+  "sit-to-stand": {
+    info: "Sit on a sturdy chair with your feet flat on the floor and your arms crossed over your chest. Keep your arms in this position throughout the entire test.\n\nOnce you start the test, you will have 7 seconds to get into the correct starting position. Use this time to sit comfortably on the chair, position your feet securely on the floor, and cross your arms over your chest.\n\nWhen the countdown finishes, begin standing up fully and sitting back down on the chair repeatedly. Complete as many repetitions as possible before the timer reaches zero. Make sure you stand upright each time and return to a seated position before starting the next repetition.\n\nKeep your arms crossed over your chest at all times, and avoid using your hands to push yourself up from the chair or assist with the movement.\n\nTry to maintain a steady pace while ensuring each repetition is performed safely and correctly. The test will end automatically when the timer reaches zero.",
+    image: "static/images/SitToStand Example.png"
+  },
+
+  "finger-to-floor": {
+    info: "Stand upright with your feet flat on the floor and your legs straight. Keep your knees extended throughout the test without bending them.\n\nBefore starting, place your device at floor level, positioned near your feet. Have the camera face towards the front of your body.\n\nEnsure the camera has a clear view of your entire body, including your feet, legs, torso, and hands. This will help provide the best possible angle for tracking your movement.\n\nOnce the test begins, you will have 10 seconds to bend forward at your waist and lower your arms towards the ground. Keep your legs straight and attempt to bring your fingertips as close to the floor as possible without bending your knees. Hold the lowest comfortable position you can reach until the timer finishes.\n\nMove slowly and avoid bouncing or forcing yourself further than is comfortable. Your result will be based on how close your fingertips get to the floor.",
+    image: "static/images/FingerToFloor Example.png"
+  },
+
+  "core-endurance": {
+    info: "Sit on the floor with your legs extended in front of you and your arms crossed over your chest. Keep your knees slightly bent. They do not need to be bent to an exact angle.\n\nBefore starting, place your phone on the floor at approximately the same height as your seated body, facing towards your left side. Ensure the camera has a clear view of your entire upper body and legs so your position can be tracked accurately.\n\nOnce the test begins, lean your upper body backwards to approximately 50 degrees from the upright position. Hold this position for as long as you can while keeping your arms crossed over your chest and maintaining a steady posture.\n\nTry to avoid leaning further backwards or returning to an upright position during the test. The test will end when you can no longer maintain the required position, or if you maintain the position for 60 seconds.",
+    image: "static/images/McGill Example.png"
+  }
+};
 
 const defaults = {
   camera: false,
@@ -45,21 +47,86 @@ const defaults = {
   results: []
 };
 
+/* ----------------------------------------
+   Storage
+---------------------------------------- */
+
+// Load saved results and flatten any older nested result arrays.
 function state() {
   try {
-    return {...defaults, ...JSON.parse(localStorage.getItem(storeKey) || '{}')
-    };
+    const saved = JSON.parse(localStorage.getItem(storeKey) || '{}');
+    const results = (Array.isArray(saved.results) ? saved.results.flat(Infinity) : [])
+      .filter(result => result && typeof result.test === 'string')
+      .map((result, index) => ({
+        id: String(result.id ?? `legacy-${result.test}-${result.date}-${index}`),
+        test: result.test,
+        score: Number(result.score),
+        date: result.date || new Date().toLocaleDateString('en-AU'),
+        completedAt: result.completedAt || null
+      }))
+      .filter(result => Number.isFinite(result.score));
+
+    return { ...defaults, ...saved, results };
   } catch {
-    return {...defaults};
+    return { ...defaults };
   }
 }
 
-function save(p) {
-  const s = {...state(), ...p};
+function save(patch) {
+  const updated = { ...state(), ...patch };
 
-  localStorage.setItem(storeKey, JSON.stringify(s));
+  try {
+    localStorage.setItem(storeKey, JSON.stringify(updated));
+  } catch (error) {
+    console.error('Unable to save results:', error);
+    toast('Unable to save results');
+  }
 
-  return s;
+  return updated;
+}
+
+// Return the IDs of every test that has been completed.
+function getCompletedTests() {
+  return new Set(
+    state().results
+      .map(result => result.test)
+      .filter(test => testDetails[test])
+  );
+}
+
+// Find each test's personal best.
+function getBestResults() {
+  const best = {};
+
+  state().results.forEach(result => {
+    if (!testDetails[result.test]) return;
+
+    const previous = best[result.test];
+    const lowerIsBetter = result.test === 'finger-to-floor';
+
+    if (!previous || (lowerIsBetter
+      ? result.score < previous.score
+      : result.score > previous.score)) {
+      best[result.test] = result;
+    }
+  });
+
+  return best;
+}
+
+function formatScore(test, score) {
+  return `${score}${testDetails[test]?.scoreType || ''}`;
+}
+
+// Prevent saved text from being interpreted as HTML.
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>"']/g, character => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[character]);
 }
 
 function toast(msg) {
@@ -85,46 +152,102 @@ function go(url) {
    Choose Test
 ---------------------------------------- */
 
-let hasLoadedPage = false;
+function renderChooseProgress(options) {
+  const available = [...options].filter(option => !option.classList.contains('unavailable') && testDetails[option.dataset.test]);
+  const completed = getCompletedTests();
+  const count = available.filter(option => completed.has(option.dataset.test)).length;
+
+  // Use the IDs when available, or the original page elements.
+  const countText = document.querySelector('#completionCount')
+    || document.querySelector('.micro');
+  const progressBar = document.querySelector('#completionProgress')
+    || document.querySelector('.progress span');
+
+  if (countText) {
+    countText.textContent = `${count} of ${available.length} completed`;
+  }
+
+  if (progressBar) {
+    progressBar.style.width = `${count / Math.max(available.length, 1) * 100}%`;
+  }
+
+  // Add a completion label to each completed test.
+  options.forEach(option => {
+    const isCompleted = completed.has(option.dataset.test);
+    option.classList.toggle('completed', isCompleted);
+
+    const content = option.querySelector(':scope > div');
+    let status = content?.querySelector('.completion-status');
+
+    if (isCompleted && content && !status) {
+      status = document.createElement('span');
+      status.className = 'completion-status';
+      content.appendChild(status);
+    }
+
+    if (status) {
+      if (isCompleted) {
+        status.textContent = 'Completed';
+      } else {
+        status.remove();
+      }
+    }
+  });
+}
 
 function initChoose() {
   const options = document.querySelectorAll('.test-option');
+  const savedTest = state().test;
+  const firstAvailable = [...options].find(option =>
+    !option.classList.contains('unavailable') && testDetails[option.dataset.test]
+  );
 
-  if (!hasLoadedPage){
-    save({test: 'sit-to-stand'});
-    console.log('sit-to-stand');
-    hasLoadedPage = true;
-  }
-    
+  const selected = testDetails[savedTest]
+    ? savedTest
+    : firstAvailable?.dataset.test || 'sit-to-stand';
+
+  save({ test: selected });
+
   options.forEach(option => {
-    if (!option.classList.contains("unavailable")){
+    option.classList.toggle('active', option.dataset.test === selected);
 
-        option.addEventListener('click', () => {
-            options.forEach(x => x.classList.remove('active'));
-
-            option.classList.add('active');
-            console.log(option.dataset.test);
-            save({test: option.dataset.test});
-        });
+    if (option.classList.contains('unavailable') || !testDetails[option.dataset.test]) {
+      return;
     }
+
+    option.addEventListener('click', () => {
+      options.forEach(item => item.classList.remove('active'));
+      option.classList.add('active');
+      save({ test: option.dataset.test });
+    });
   });
 
-  document.querySelector('#startTest')?.addEventListener('click', () => go('instructions'));
+  renderChooseProgress(options);
+
+  document.querySelector('#startTest')?.addEventListener('click', event => {
+    event.preventDefault();
+    go('instructions');
+  });
 }
 
 /* ----------------------------------------
    Instructions
 ---------------------------------------- */
 
-function initInstructions(){
-  const s = state();
-  const selectedTest = s.test;
+function initInstructions() {
+  const selected = testDetails[state().test] ? state().test : 'sit-to-stand';
+  const instructions = testInstructions[selected];
 
-  const instructionText = document.getElementById("instructions");
-  const instructionExampleImg = document.getElementById("instructionImg");
+  const instructionText = document.getElementById('instructions');
+  const instructionImage = document.getElementById('instructionImg');
 
-  instructionText.innerHTML = testInstructions[selectedTest]["info"].replace(/\n\n/g, '<br><br>');
-  instructionExampleImg.src = testInstructions[selectedTest]["image"];
+  if (instructionText) {
+    instructionText.innerHTML = instructions.info.replace(/\n\n/g, '<br><br>');
+  }
+
+  if (instructionImage) {
+    instructionImage.src = instructions.image;
+  }
 
   document.querySelector('#startTest')?.addEventListener('click', () => go('test'));
 }
@@ -133,172 +256,195 @@ function initInstructions(){
    Test
 ---------------------------------------- */
 
-let startTest = false;
-
 function initTest() {
-  const s = state();
-  const selectedTest = s.test;
-  const test = testDetails[selectedTest];
+  const selected = testDetails[state().test] ? state().test : 'sit-to-stand';
+  const test = testDetails[selected];
 
+  let remaining = test.duration;
+  let remainingPrep = test.prepTime;
+  let preparing = false;
   let running = false;
-
-  const testLabel = document.getElementById("test-label")
-  testLabel.innerHTML = test.name;
-
-  const totalTime = test['duration']
-  let remaining = totalTime;
-
   let timerPrep;
   let timer;
-  
-  var _points = points;
-  if (_points == Infinity) points = 0;
 
-  const prepTime = test['prepTime']
-  let remainingPrep = prepTime;
+  // Reset the score when a new test begins.
+  points = 0;
+  isTestActive = false;
 
-  const timerText = document.querySelector('#timer');
-  const timerLabel = document.querySelector('#timer-label')
+  const testLabel = document.getElementById('test-label');
+  const timerText = document.getElementById('timer');
+  const timerLabel = document.getElementById('timer-label');
+  const scoreText = document.getElementById('score');
+  const startButton = document.getElementById('runTest');
+  const progressBar = document.getElementById('testProgress');
 
-  const scoreText = document.querySelector('#score');
-  scoreText.innerHTML = points + test['scoreType'];
+  testLabel.textContent = test.name;
+  timerText.textContent = `${test.duration}s`;
+  scoreText.textContent = formatScore(selected, points);
+  progressBar.style.width = '0%';
 
-  const startText = document.querySelector('#runTest');
-  const progressBar = document.querySelector('#testProgress');
+  // Save the result and move to the results page.
+  function finishTest() {
+    if (!running) return;
 
-  timerText.textContent = totalTime + 's';
+    running = false;
+    isTestActive = false;
+    clearInterval(timer);
 
-  startText.onclick = () => {
-    if (running) {
-      return;
-    }
+    const completedAt = new Date();
+    const result = {
+      id: `${completedAt.getTime()}-${Math.random().toString(16).slice(2)}`,
+      test: selected,
+      score: Number(points) || 0,
+      date: completedAt.toLocaleDateString('en-AU'),
+      completedAt: completedAt.toISOString()
+    };
 
-    timerText.innerHTML = remainingPrep;
-    timerLabel.innerHTML = 'Get Ready!';
-    startText.innerHTML = 'Move into position!'
+    save({
+      score: result.score,
+      results: [...state().results, result]
+    });
 
-    if(!startTest){
-      timerPrep = setInterval(() => {
-        remainingPrep--;
-        timerText.innerHTML = remainingPrep;
-        timerLabel.innerHTML = 'Get Ready!';
-        startText.innerHTML = 'Move Into Position!'
+    go('results');
+  }
 
-        if (remainingPrep <= 0){
-          startTest = true;
-          clearInterval(timerPrep);
-          initTest();
-        }
-      }, 1000)
-    }
+  // Start the actual test after the preparation countdown.
+  function beginTest() {
+    running = true;
+    isTestActive = true;
+    remaining = test.duration;
+
+    timerLabel.textContent = 'Remaining Time';
+    startButton.textContent = 'Testing…';
+    startButton.disabled = true;
+
+    timer = setInterval(() => {
+      remaining--;
+
+      timerText.textContent = `${Math.max(remaining, 0)}s`;
+      scoreText.textContent = formatScore(selected, Number(points) || 0);
+      progressBar.style.width = `${(test.duration - Math.max(remaining, 0)) / test.duration * 100}%`;
+
+      if (remaining <= 0) {
+        progressBar.style.width = '100%';
+        finishTest();
+      }
+    }, 1000);
+  }
+
+  startButton.onclick = () => {
+    if (preparing || running) return;
+
+    preparing = true;
+    remainingPrep = test.prepTime;
+
+    timerText.textContent = `${remainingPrep}s`;
+    timerLabel.textContent = 'Get Ready!';
+    startButton.textContent = 'Move into position!';
+
+    timerPrep = setInterval(() => {
+      remainingPrep--;
+
+      timerText.textContent = `${Math.max(remainingPrep, 0)}s`;
+
+      if (remainingPrep <= 0) {
+        clearInterval(timerPrep);
+        preparing = false;
+        beginTest();
+      }
+    }, 1000);
   };
-
-    if (startTest){
-      isTestActive = true;
-
-      running = true;
-
-      timerLabel.innerHTML = "Remaining Time";
-      startText.textContent = 'Testing…';
-
-      timer = setInterval(() => {
-        remaining--;
-
-        timerText.textContent = remaining + 's';
-        scoreText.textContent = points + test['scoreType'];
-
-        progressBar.style.width = ((totalTime - remaining) / totalTime * 100) + '%';
-
-        if (remaining <= 0) {
-          startTest = false;
-          isTestActive = false;
-
-          clearInterval(timer);
-
-          const s = save({score: points});
-
-          s.results = [(s.results || []),
-            {
-              date: new Date().toLocaleDateString('en-AU'),
-              test: s.test,
-              score: s.score
-            }];
-
-          save({results: s.results});
-
-          go('results');
-        }
-      }, 1000);  
-    }
 }
 
 /* ----------------------------------------
    Results
 ---------------------------------------- */
 
+function renderBestResults() {
+  const box = document.querySelector('#bestResults') || document.querySelector('.metric-list');
+
+  if (!box) return;
+
+  const best = getBestResults();
+
+  box.innerHTML = Object.keys(testDetails).map(test => {
+    const result = best[test];
+    const score = result
+      ? `<span>${escapeHTML(formatScore(test, result.score))}</span>`
+      : '<span class="not-completed">Not Available</span>';
+
+    const date = result
+      ? `Best result: ${escapeHTML(result.date)}`
+      : 'Complete this test to save a result.';
+
+    return `<div class="metric">
+              <div>
+                <span>${escapeHTML(testDetails[test].name)}</span>
+                <small class="result-date">${date}</small>
+              </div>
+              ${score}
+            </div>`;
+  }).join('');
+}
+
 function initResults() {
-  const s = state();
+  renderBestResults();
 
-  document.querySelector('.score-label').textContent = s.test;
-
-  document.querySelector('#final-score').textContent = s.score + testDetails[s.test]['scoreType'] || 0;
-
-  document.querySelector('#exportResult')?.addEventListener('click', () => {toast('Result saved');
-    
-  setTimeout(() => go('export'), 500);});
+  document.querySelector('#exportResult')?.addEventListener('click', downloadJSON);
+  document.querySelector('#deleteResults')?.addEventListener('click', deleteAllResults);
 }
 
 /* ----------------------------------------
    Export
 ---------------------------------------- */
 
-function initExport() {
-  const s = state();
+function downloadJSON() {
+  const best = getBestResults();
 
-  document.querySelector('#exportBtn')?.addEventListener('click', () => {
-    const blob = new Blob([JSON.stringify({test: s.test, score: s.score, exportedAt: new Date().toISOString()}, null, 2)],
-      {
-        type: 'application/json'
-      }
-    );
+  const data = Object.keys(testDetails)
+    .filter(test => best[test])
+    .map(test => ({
+      test: testDetails[test].name,
+      score: best[test].score,
+      unit: testDetails[test].scoreType,
+      date: best[test].date
+    }));
 
-    const a = document.createElement('a');
+  const blob = new Blob(
+    [JSON.stringify(data, null, 2)],
+    { type: 'application/json' }
+  );
 
-    a.href = URL.createObjectURL(blob);
-    a.download = 'spine-plus-result.json';
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'best-results.json';
+  link.click();
 
-    a.click();
-
-    URL.revokeObjectURL(a.href);
-
-    toast('Results exported');
-  });
+  URL.revokeObjectURL(link.href);
 }
 
-/* ----------------------------------------
-   Past Results
----------------------------------------- */
 
-function initPast() {
-  const s = state();
-  const box = document.querySelector('#pastList');
-
-  let results = s.results || [];
-
-  if (results.length > 0) {
-    results = [
-      {
-        date: 'Today',
-        test: s.test || 'Single Leg Stand',
-        score: s.score || 0
-      }
-    ];
+function deleteAllResults() {
+  if (!confirm('Delete all saved assessment results and completion progress? This cannot be undone.')) {
+    return;
   }
 
-  box.innerHTML = results.slice().reverse().map(
-      r => `<div class="past-item">
-              <span class="past-score">${r.score}</span>
-              <div class="past-date">${r.date}</div>
-              <div class="past-title">${r.test || 'Spine Plus Assessment'}</div>
-            </div>`).join('');
+  save({ results: [], score: 0 });
+
+  // Refresh whichever results display is currently open.
+  renderBestResults();
+
+  const finalScore = document.querySelector('#final-score');
+  if (finalScore) finalScore.textContent = '0';
+
+  toast('Saved results deleted');
+}
+
+function initExport() {
+  document.querySelector('#exportBtn')?.addEventListener('click', downloadJSON);
+}
+
+
+function initPast() {
+  document.querySelector('#deleteAllResults')?.addEventListener('click', deleteAllResults);
 }
